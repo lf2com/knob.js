@@ -1,9 +1,17 @@
 <title>Knob Demo</title>
 <style>
+  body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    font-family: arial;
+    display: flex;
+  }
+  #container { margin: auto; }
   #knob {
     position: relative;
-    padding-top: 30%;
-    width: 30%;
+    padding-top: 30vw;
+    width: 30vw;
     height: 0;
     box-shadow: 0 0 1em #999;
     border-radius: 50%;
@@ -21,31 +29,39 @@
     border-radius: 50%;
     background-color: #c30;
   }
+  #deg {
+    margin: 1em 0;
+    text-align: center;
+  }
+  #deg::after {
+    content: 'deg';
+    margin: 0 .25em;
+  }
 </style>
 <script src="../knob.min.js"></script>
-
-<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script>
   window.addEventListener('load', function() {
     var knobDom = document.getElementById('knob');
+    var degDom = document.getElementById('deg');
 
     knob(knobDom, {
       minDegree: -405,
       maxDegree: 480
     });
-    knobDom.addEventListener('rotatestart', function(evt) {
-      console.log(evt.type, evt.detail.realDegree);
+    knobDom.addEventListener('spinstart', function(evt) {
+      // start
     });
-    knobDom.addEventListener('rotating', function(evt) {
-      console.log(evt.type, evt.detail.realDegree);
+    knobDom.addEventListener('spining', function(evt) {
+      degDom.innerHTML = parseInt(evt.detail.realDegree);
     });
-    knobDom.addEventListener('rotateend', function(evt) {
-      console.log(evt.type, evt.detail.realDegree);
+    knobDom.addEventListener('spinend', function(evt) {
+      // end
     });
   });
 </script>
 <body>
-  <div id="knob">
-
+  <div id="container">
+    <div id="knob"></div>
+    <div id="deg">0</div>
   </div>
 </body>

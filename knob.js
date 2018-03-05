@@ -1,8 +1,8 @@
 (() => { 'use strict';
 
-  const _evtStartName = 'rotatestart';
-  const _evtEndName = 'rotateend';
-  const _evtExecName = 'rotating';
+  const _evtStartName = 'spinstart';
+  const _evtEndName = 'spinend';
+  const _evtExecName = 'spining';
 
   const isset = (o) => ('undefined'!==typeof o);
   const fireEvent = (t, n, p) => t.dispatchEvent(new CustomEvent(n, { detail: p }));
@@ -108,9 +108,11 @@
           if (isset(minDegree) && realDeg < minDegree) {
             realDeg = minDegree;
             pinDeg = stdDeg(realDeg);
+            lastDirections = (parseInt(minDegree/90)-1);
           } else if (isset(maxDegree) && maxDegree < realDeg) {
             realDeg = maxDegree;
             pinDeg = stdDeg(realDeg);
+            lastDirections = parseInt(maxDegree/90);
           } else {
             lastDirections = directions;
           }
