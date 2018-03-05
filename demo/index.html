@@ -1,0 +1,51 @@
+<title>Knob Demo</title>
+<style>
+  #knob {
+    position: relative;
+    padding-top: 30%;
+    width: 30%;
+    height: 0;
+    box-shadow: 0 0 1em #999;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+  }
+  #knob::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 10% 0;
+    width: 5%;
+    height: 5%;
+    border-radius: 50%;
+    background-color: #c30;
+  }
+</style>
+<script src="../knob.min.js"></script>
+
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script>
+  window.addEventListener('load', function() {
+    var knobDom = document.getElementById('knob');
+
+    knob(knobDom, {
+      minDegree: -405,
+      maxDegree: 480
+    });
+    knobDom.addEventListener('rotatestart', function(evt) {
+      console.log(evt.type, evt.detail.realDegree);
+    });
+    knobDom.addEventListener('rotating', function(evt) {
+      console.log(evt.type, evt.detail.realDegree);
+    });
+    knobDom.addEventListener('rotateend', function(evt) {
+      console.log(evt.type, evt.detail.realDegree);
+    });
+  });
+</script>
+<body>
+  <div id="knob">
+
+  </div>
+</body>
