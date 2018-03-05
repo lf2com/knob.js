@@ -43,10 +43,12 @@
   window.addEventListener('load', function() {
     var knobDom = document.getElementById('knob');
     var degDom = document.getElementById('deg');
+    var defDeg
 
     knob(knobDom, {
       minDegree: -405,
-      maxDegree: 480
+      maxDegree: 480,
+      degree: 500
     });
     knobDom.addEventListener('spinstart', function(evt) {
       // start
@@ -57,6 +59,8 @@
     knobDom.addEventListener('spinend', function(evt) {
       // end
     });
+
+    degDom.innerHTML = knob.getDegree(knobDom);
   });
 </script>
 <body>

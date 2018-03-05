@@ -76,6 +76,7 @@
       if (isset(params.minDegree)) { knob.setMinDegree(dom, params.minDegree); }
       if (isset(params.maxDegree)) { knob.setMaxDegree(dom, params.maxDegree); }
       if (isset(params.fixed)) { knob.setFixed(dom, params.fixed); }
+      knob.setDegree(dom, (params.degree||0));
       let onstart = function(evt) {
         evt.preventDefault();
         let rect = this.getBoundingClientRect();
@@ -166,9 +167,18 @@
   knob.getFixed = (dom) => dom._knobFixed;
   knob.setFixed = (src, fixed) => domForEach(src, (dom) => { dom._knobFixed = (fixed ?true :false); });
   knob.getMaxDegree = (dom) => dom._knobMaxDegree;
-  knob.setMaxDegree = (src, degree) => domForEach(src, (dom) => { dom._knobMaxDegree = degree; });
+  knob.setMaxDegree = (src, deg) => domForEach(src, (dom) => { dom._knobMaxDegree = deg; });
   knob.getMinDegree = (dom) => dom._knobMinDegree;
-  knob.setMinDegree = (src, degree) => domForEach(src, (dom) => { dom._knobMinDegree = degree; });
+  knob.setMinDegree = (src, deg) => domForEach(src, (dom) => { dom._knobMinDegree = deg; });
+  knob.getDegree = (dom) => dom._knobRecordDeg;
+  knob.setDegree = (src, deg) => domForEach(src, (dom) => {
+    let minDegree = dom._knobMinDegree;
+    let maxDegree = dom._knobMaxDegree;
+    deg = Math.min(maxDegree, Math.max(minDegree, deg));
+    dom._knobRecordDeg = deg;
+    dom._knobRecordDirections = (parseInt(deg/90)+(0<deg ?0 :-1));
+    dom.style.transform = ('rotate('+deg+'deg)');
+  });
   knob.doms = () => evtPool.map((item) => item.target);
 
   module.exports = knob;
