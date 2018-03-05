@@ -73,9 +73,9 @@
 
   function knob(src, params = {}) {
     domForEach(src, (dom) => {
-      if (isset(params.minDegree)) { knob.setMinDegree(dom, params.minDegree); }
-      if (isset(params.maxDegree)) { knob.setMaxDegree(dom, params.maxDegree); }
-      if (isset(params.fixed)) { knob.setFixed(dom, params.fixed); }
+      knob.setMinDegree(dom, params.minDegree);
+      knob.setMaxDegree(dom, params.maxDegree);
+      knob.setFixed(dom, params.fixed);
       knob.setDegree(dom, (params.degree||0));
       let onstart = function(evt) {
         evt.preventDefault();
