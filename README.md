@@ -37,6 +37,7 @@ knob(dom, {
 | minDegree | _Number_ | minimum degree |
 | maxDegree | _Number_ | maximum degree |
 | fixed | _Boolean_ | `true` to prevent knob to be spinned |
+| degree | _Number_ | default degree for knob |
 
 ### Remove knob
 ```javascript
@@ -46,20 +47,37 @@ knob.off(dom); // remove knob
 ### Set/get minimum degree
 ```javascript
 knob.setMinDegree(dom, -405); // set to -405
+knob.getMinDegree(dom); // -405
+
 knob.setMinDegree(dom); // unset (unlimit)
+knob.getMinDegree(dom); // undefined
 ```
 
 ### Set/get maximum degree
 ```javascript
 knob.setMaxDegree(dom, 480); // set to 480
+knob.getMaxDegree(dom); // 480
+
 knob.setMaxDegree(dom); // unset (unlimit)
+knob.getMaxDegree(dom); // undefined
 ```
 
 ### Set/get fixed status
 ```javascript
 knob.setFixed(dom, true); // set to fix
+knob.getFixed(dom); // true
+
 knob.setFixed(dom, false); // unset (unfixed)
+knob.getFixed(dom); // false
+
 knob.setFixed(dom); // unset (unfixed)
+knob.getFixed(dom); // false
+```
+
+### Set/get degree
+```javascript
+knob.setDegree(dom, 30); // set to 30deg
+knob.getDegree(dom); // 30
 ```
 
 ### Get all knob DOMs
