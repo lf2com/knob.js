@@ -166,15 +166,15 @@
   });
   knob.getFixed = (dom) => dom._knobFixed;
   knob.setFixed = (src, fixed) => domForEach(src, (dom) => { dom._knobFixed = (fixed ?true :false); });
-  knob.getMaxDegree = (dom) => dom._knobMaxDegree;
+  knob.getMaxDegree = (dom) => (dom._knobMaxDegree||Math.min());
   knob.setMaxDegree = (src, deg) => domForEach(src, (dom) => { dom._knobMaxDegree = deg; });
-  knob.getMinDegree = (dom) => dom._knobMinDegree;
+  knob.getMinDegree = (dom) => (dom._knobMinDegree||Math.max());
   knob.setMinDegree = (src, deg) => domForEach(src, (dom) => { dom._knobMinDegree = deg; });
   knob.getDegree = (dom) => dom._knobRecordDeg;
   knob.setDegree = (src, deg) => domForEach(src, (dom) => {
-    let minDegree = dom._knobMinDegree;
-    let maxDegree = dom._knobMaxDegree;
-    deg = Math.min(maxDegree, Math.max(minDegree, deg));
+    let minDegree = knob.getMinDegree(dom);
+    let maxDegree = knob.getMaxDegree(dom);
+    deg = Math.min(maxDegree, Math.max(minDegree, (deg||0)));
     dom._knobRecordDeg = deg;
     dom._knobRecordDirections = (parseInt(deg/90)+(0<deg ?0 :-1));
     dom.style.transform = ('rotate('+deg+'deg)');

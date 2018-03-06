@@ -5,14 +5,14 @@
     width: 100vw;
     height: 100vh;
     font-family: arial;
+    font-size: 5vh;
     display: flex;
   }
   #container { margin: auto; }
   #knob {
     position: relative;
-    padding-top: 30vw;
-    width: 30vw;
-    height: 0;
+    width: 50vmin;
+    height: 50vmin;
     box-shadow: 0 0 1em #999;
     border-radius: 50%;
     border: 1px solid #ccc;
@@ -45,15 +45,12 @@
     var degDom = document.getElementById('deg');
     var defDeg
 
-    knob(knobDom, {
-      minDegree: -405,
-      maxDegree: 480,
-      degree: 500
-    });
+    knob(knobDom);
     knobDom.addEventListener('spinstart', function(evt) {
       // start
     });
     knobDom.addEventListener('spining', function(evt) {
+      console.log(evt.detail);
       degDom.innerHTML = parseInt(evt.detail.realDegree);
     });
     knobDom.addEventListener('spinend', function(evt) {
