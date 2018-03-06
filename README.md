@@ -25,7 +25,11 @@ Copy `knob.min.js`
 
 # Methods
 ### Create knob
-Knob(DOMelement, parameters)
+`Knob(DOMelement[, parameters])`
+```javascript
+knob(dom); // unlimit min/max degree knob
+```
+Or you can limit the min/max degree that the knob could be spinned:
 ```javascript
 knob(dom, {
   minDegree: -405,
@@ -34,10 +38,10 @@ knob(dom, {
 ```
 | property | type | description |
 |-|-|-|
-| minDegree | _Number_ | minimum degree |
-| maxDegree | _Number_ | maximum degree |
-| fixed | _Boolean_ | `true` to prevent knob to be spinned |
-| degree | _Number_ | default degree for knob |
+| minDegree | _Number_ | (*optional*) minimum degree, default is `Infinity` |
+| maxDegree | _Number_ | (*optional*) maximum degree, default is `-Infinity` |
+| fixed | _Boolean_ | (*optional*) `true` to prevent knob to be spinned |
+| degree | _Number_ | (*optional*) degree for knob, default is `0` |
 
 ### Remove knob
 ```javascript
@@ -50,7 +54,7 @@ knob.setMinDegree(dom, -405); // set to -405
 knob.getMinDegree(dom); // -405
 
 knob.setMinDegree(dom); // unset (unlimit)
-knob.getMinDegree(dom); // undefined
+knob.getMinDegree(dom); // -Infinity
 ```
 
 ### Set/get maximum degree
@@ -59,7 +63,7 @@ knob.setMaxDegree(dom, 480); // set to 480
 knob.getMaxDegree(dom); // 480
 
 knob.setMaxDegree(dom); // unset (unlimit)
-knob.getMaxDegree(dom); // undefined
+knob.getMaxDegree(dom); // Infinity
 ```
 
 ### Set/get fixed status
