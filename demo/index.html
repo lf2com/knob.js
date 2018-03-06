@@ -50,7 +50,6 @@
       // start
     });
     knobDom.addEventListener('spining', function(evt) {
-      console.log(evt.detail);
       degDom.innerHTML = parseInt(evt.detail.realDegree);
     });
     knobDom.addEventListener('spinend', function(evt) {

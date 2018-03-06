@@ -5,6 +5,7 @@
   const _evtExecName = 'spining';
 
   const isset = (o) => ('undefined'!==typeof o);
+  const useor = (a, b) => (isset(a) ?a :b);
   const fireEvent = (t, n, p) => t.dispatchEvent(new CustomEvent(n, { detail: p }));
   const evtPool = [];
   const doublePi = 2*Math.PI;
@@ -106,11 +107,11 @@
           let minDegree = knob.getMinDegree(this);
           let maxDegree = knob.getMaxDegree(this);
           let fixed = knob.getFixed(this);
-          if (isset(minDegree) && realDeg < minDegree) {
+          if (realDeg < minDegree) {
             realDeg = minDegree;
             pinDeg = stdDeg(realDeg);
             lastDirections = (parseInt(minDegree/90)-1);
-          } else if (isset(maxDegree) && maxDegree < realDeg) {
+          } else if (maxDegree < realDeg) {
             realDeg = maxDegree;
             pinDeg = stdDeg(realDeg);
             lastDirections = parseInt(maxDegree/90);
@@ -166,9 +167,9 @@
   });
   knob.getFixed = (dom) => dom._knobFixed;
   knob.setFixed = (src, fixed) => domForEach(src, (dom) => { dom._knobFixed = (fixed ?true :false); });
-  knob.getMaxDegree = (dom) => (dom._knobMaxDegree||Math.min());
+  knob.getMaxDegree = (dom) => useor(dom._knobMaxDegree, Math.min());
   knob.setMaxDegree = (src, deg) => domForEach(src, (dom) => { dom._knobMaxDegree = deg; });
-  knob.getMinDegree = (dom) => (dom._knobMinDegree||Math.max());
+  knob.getMinDegree = (dom) => useor(dom._knobMinDegree, Math.max());
   knob.setMinDegree = (src, deg) => domForEach(src, (dom) => { dom._knobMinDegree = deg; });
   knob.getDegree = (dom) => dom._knobRecordDeg;
   knob.setDegree = (src, deg) => domForEach(src, (dom) => {
@@ -176,7 +177,8 @@
     let maxDegree = knob.getMaxDegree(dom);
     deg = Math.min(maxDegree, Math.max(minDegree, (deg||0)));
     dom._knobRecordDeg = deg;
-    dom._knobRecordDirections = (parseInt(deg/90)+(0<deg ?0 :-1));
+    dom._knobRecordDirections = (parseInt(deg/90)+(deg<0 ?-1 :0));
+    console.log(dom._knobRecordDeg, dom._knobRecordDirections);
     dom.style.transform = ('rotate('+deg+'deg)');
   });
   knob.doms = () => evtPool.map((item) => item.target);
