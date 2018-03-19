@@ -1,0 +1,83 @@
+<title>Knob Demo</title>
+<style>
+  body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    font-family: arial;
+    font-size: 5vh;
+    display: flex;
+  }
+  #container { margin: auto; }
+  #knob {
+    position: relative;
+    width: 70vmin;
+    height: 70vmin;
+    box-shadow: 0 0 1em #999;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    overflow: hidden;
+  }
+  #knob canvas {
+    pointer-events: none;
+  }
+  #deg {
+    margin: 1em 0;
+    text-align: center;
+  }
+  #deg::after {
+    content: 'deg';
+    margin: 0 .25em;
+  }
+</style>
+<script src="../knob.min.js"></script>
+<script>
+  window.addEventListener('load', function() {
+    var knobDom = document.getElementById('knob');
+    var knobCanvas = knobDom.querySelector('canvas');
+    var knobCtx = knobCanvas.getContext('2d');
+    var degDom = document.getElementById('deg');
+
+    var doPin = function(deg) {
+      degDom.innerHTML = parseInt(deg);
+      var rect = knobDom.getBoundingClientRect();
+      var cx = 0.5*rect.width;
+      var cy = 0.5*rect.height;
+      var x = 0;
+      var y = 0.8*-cy;
+      var r = 0.05*cx;
+      knobCanvas.width = rect.width;
+      knobCanvas.height = rect.height;
+      knobCtx.clearRect(0, 0, rect.width, rect.height);
+      knobCtx.translate(cx, cy);
+      knobCtx.rotate(deg*Math.PI/180);
+      knobCtx.translate(-cx, -cy);
+      knobCtx.beginPath();
+      knobCtx.arc(cx+x, cy+y, r, 0, 2*Math.PI, false);
+      knobCtx.fillStyle = '#c30';
+      knobCtx.fill();
+    }
+
+    knob(knobDom, { fixed: true });
+    knobDom.addEventListener('spinstart', function(evt) {
+      var onspin = function(evt) {
+        doPin(evt.detail.realDegree);
+      };
+      var onspinend = function() {
+        knobDom.removeEventListener('spining', onspin);
+        knobDom.removeEventListener('spinend', onspinend);
+      };
+      knobDom.addEventListener('spining', onspin);
+      knobDom.addEventListener('spinend', onspinend);
+    });
+    doPin(knob.getDegree(knobDom));
+  });
+</script>
+<body>
+  <div id="container">
+    <div id="knob">
+      <canvas></canvas>
+    </div>
+    <div id="deg">0</div>
+  </div>
+</body>
