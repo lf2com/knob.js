@@ -1,83 +1,266 @@
-<title>Knob Demo</title>
-<style>
-  body {
-    margin: 0;
-    width: 100vw;
-    height: 100vh;
-    font-family: arial;
-    font-size: 5vh;
-    display: flex;
-  }
-  #container { margin: auto; }
-  #knob {
-    position: relative;
-    width: 70vmin;
-    height: 70vmin;
-    box-shadow: 0 0 1em #999;
-    border-radius: 50%;
-    border: 1px solid #ccc;
-    overflow: hidden;
-  }
-  #knob canvas {
-    pointer-events: none;
-  }
-  #deg {
-    margin: 1em 0;
-    text-align: center;
-  }
-  #deg::after {
-    content: 'deg';
-    margin: 0 .25em;
-  }
-</style>
-<script src="../knob.min.js"></script>
-<script>
-  window.addEventListener('load', function() {
-    var knobDom = document.getElementById('knob');
-    var knobCanvas = knobDom.querySelector('canvas');
-    var knobCtx = knobCanvas.getContext('2d');
-    var degDom = document.getElementById('deg');
-
-    var doPin = function(deg) {
-      degDom.innerHTML = parseInt(deg);
-      var rect = knobDom.getBoundingClientRect();
-      var cx = 0.5*rect.width;
-      var cy = 0.5*rect.height;
-      var x = 0;
-      var y = 0.8*-cy;
-      var r = 0.05*cx;
-      knobCanvas.width = rect.width;
-      knobCanvas.height = rect.height;
-      knobCtx.clearRect(0, 0, rect.width, rect.height);
-      knobCtx.translate(cx, cy);
-      knobCtx.rotate(deg*Math.PI/180);
-      knobCtx.translate(-cx, -cy);
-      knobCtx.beginPath();
-      knobCtx.arc(cx+x, cy+y, r, 0, 2*Math.PI, false);
-      knobCtx.fillStyle = '#c30';
-      knobCtx.fill();
+<html>
+  <title>Knob Demo</title>
+  <style>
+    body, input {
+      font-family: monospace;
+      font-size: 3vh;
+      line-height: 1em;
     }
-
-    knob(knobDom, { fixed: true });
-    knobDom.addEventListener('spinstart', function(evt) {
-      var onspin = function(evt) {
-        doPin(evt.detail.realDegree);
-      };
-      var onspinend = function() {
-        knobDom.removeEventListener('spining', onspin);
-        knobDom.removeEventListener('spinend', onspinend);
-      };
-      knobDom.addEventListener('spining', onspin);
-      knobDom.addEventListener('spinend', onspinend);
-    });
-    doPin(knob.getDegree(knobDom));
-  });
-</script>
-<body>
-  <div id="container">
-    <div id="knob">
-      <canvas></canvas>
+    #container {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      margin: .5em;
+      display: flex;
+      flex-flow: column;
+    }
+    #main {
+      display: flex;
+      flex: 1 1;
+    }
+    #knob {
+      position: relative;
+      margin: auto;
+      width: 50vmin;
+      height: 50vmin;
+      box-shadow: 0 0 1em #999;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      overflow: hidden;
+    }
+    #knob canvas { pointer-events: none; }
+    .deg {
+      margin: .5em 0;
+      text-align: center;
+    }
+    .deg::after {
+      content: 'deg';
+      margin: 0 .25em;
+    }
+    .deg::before {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    #fingerDeg::before { content: 'Finger: '; }
+    #offsetDeg::before { content: 'Offset: '; }
+    #deg::before { content: 'Real: '; }
+    
+    #config {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: .9em;
+    }
+    #config >* {
+      line-height: 1.5em;
+    }
+    #config input:not([type=number]) {
+      margin: 0 .2em;
+      width: 1em;
+      height: 1em;
+    }
+    #config input[type=number],
+    #config button {
+      padding: 0 .2em;
+      width: 3em;
+      box-sizing: border-box;
+      border: 1px solid #333;
+      font-size: .9em;
+    }
+  </style>
+  <script src="../knob.min.js"></script>
+  <body>
+    <div id="container">
+      <div id="config">
+        <div id="min">
+          <input type="checkbox" id="minDeg" />
+          <label for="minDeg">Min deg:</label>
+          <input type="number" value="0" />
+        </div>
+        <div id="max">
+          <input type="checkbox" id="maxDeg" />
+          <label for="maxDeg">Max deg:</label>
+          <input type="number" value="0" />
+        </div>
+        <div id="set">
+          <span>Deg:</span>
+          <input type="number" value="0" />
+          <button>Set</button>
+        </div>
+        <div id="renderBy">
+          Render by:
+          <input type="radio" name="renderBy" id="renderByCss" value="css">
+          <label for="renderByCss">CSS rotate</label>
+          <input type="radio" name="renderBy" id="renderByCanvas" value="canvas">
+          <label for="renderByCanvas">Canvas</label>
+        </div>
+        <div id="renderFace">
+          Render:
+          <input type="radio" name="renderFace" id="renderFaceDot" value="dot">
+          <label for="renderFaceDot">Dot</label>
+          <input type="radio" name="renderFace" id="renderFaceImage" value="image">
+          <label for="renderFaceImage">Image</label>
+        </div>
+      </div>
+      <div id="main">
+        <div id="knob">
+          <canvas></canvas>
+        </div>
+      </div>
+      <div id="fingerDeg" class="deg">0</div>
+      <div id="offsetDeg" class="deg">0</div>
+      <div id="deg" class="deg">0</div>
     </div>
-    <div id="deg">0</div>
-  </div>
-</body>
+  </body>
+  <script>
+    const domKnob = document.getElementById('knob');
+    const knob = new Knob(domKnob);
+
+    const spinImageUrl = './spin.jpg';
+
+    // min deg
+    ((dom) => {
+      const domValue = dom.querySelector('input[type="number"]');
+      dom.querySelector('input[type="checkbox"]').addEventListener('change', ({ target: { checked } }) => {
+        if (checked) {
+          try {
+            knob.setMinDeg(parseInt(domValue.value));
+          } catch (err) {
+            alert(err.message);
+          }
+        } else {
+          knob.setMinDeg();
+        }
+      });
+    })(document.getElementById('min'));
+
+    // max deg
+    ((dom) => {
+      const domValue = dom.querySelector('input[type="number"]');
+      dom.querySelector('input[type="checkbox"]').addEventListener('change', ({ target: { checked } }) => {
+        if (checked) {
+          try {
+            knob.setMaxDeg(parseInt(domValue.value));
+          } catch (err) {
+            alert(err.message);
+          }
+        } else {
+          knob.setMaxDeg();
+        }
+      });
+    })(document.getElementById('max'));
+
+    // set deg
+    const domSetDeg = ((dom) => {
+      const domValue = dom.querySelector('input[type="number"]');
+      const setDeg = () => knob.setDeg(parseInt(domValue.value));
+      domValue.addEventListener('keydown', ({ keyCode }) => (13===keyCode&&setDeg()));
+      dom.querySelector('button').addEventListener('click', () => setDeg());
+      return domValue;
+    })(document.getElementById('set'));
+
+    // render by
+    let renderBy = ((dom) => {
+      const defaultDom = Array.prototype.map.call(dom.querySelectorAll('input[name="renderBy"]'), (domRadio) => {
+        const type = domRadio.value;
+        domRadio.addEventListener('change', ({ target: { checked } }) => {
+          if (checked) {
+            if ('canvas' === type) {
+              knob.setFixed(true);
+              drawSpin(knob.getDeg());
+            } else {
+              knob.setFixed(false);
+              drawSpin(0);
+            }
+            renderBy = type;
+          }
+        });
+        return domRadio;
+      })[0];
+      defaultDom.checked = true;
+      knob.setFixed('canvas'===defaultDom.value);
+      return defaultDom.value;
+    })(document.getElementById('renderBy'));
+
+    // render face
+    let renderFace = ((dom) => {
+      const defaultDom = Array.prototype.map.call(dom.querySelectorAll('input[name="renderFace"]'), (domRadio) => {
+        const type = domRadio.value;
+        domRadio.addEventListener('change', ({ target: { checked } }) => {
+          if (checked) {
+            renderFace = type;
+            onSpin(knob.getDeg());
+          }
+        });
+        return domRadio;
+      })[0];
+      defaultDom.checked = true;
+      return defaultDom.value;
+    })(document.getElementById('renderFace'));
+
+    // show deg
+    const showDeg = (() => {
+      const domDeg = document.getElementById('deg');
+      const domFinger = document.getElementById('fingerDeg');
+      const domOffset = document.getElementById('offsetDeg');
+      return ({ fingerDeg, offsetDeg, deg }) => {
+        domSetDeg.value = (deg|0);
+        domDeg.innerHTML = (deg|0);
+        domFinger.innerHTML = (fingerDeg|0);
+        domOffset.innerHTML = (offsetDeg|0);
+      };
+    })();
+
+    // spin image
+    let spinImage = (() => {
+      const img = document.createElement('img');
+      img.src = spinImageUrl;
+      img.addEventListener('load', ({ target }) => (spinImage=target));
+      img.addEventListener('error', () => alert(`Load spin image failed:\n${spinImageUrl}`));
+    })();
+
+    // draw spin
+    const drawSpin = (() => {
+      const canvasKnob = domKnob.querySelector('canvas');
+      const ctxKnob = canvasKnob.getContext('2d');
+      return (deg = 0) => {
+        const { clientWidth: width, clientWidth: height } = domKnob;
+        const center = {
+          x: (0.5*width),
+          y: (0.5*height),
+        };
+        const x = 0;
+        const y = (0.8*-center.y);
+        const r = (0.05*center.x);
+        canvasKnob.width = width;
+        canvasKnob.height = height;
+        ctxKnob.clearRect(0, 0, width, height);
+        ctxKnob.translate(center.x, center.y);
+        ctxKnob.rotate(deg*Math.PI/180);
+        ctxKnob.translate(-center.x, -center.y);
+        if ('dot' === renderFace) {
+          ctxKnob.beginPath();
+          ctxKnob.arc((center.x+x), (center.y+y), r, 0, (2*Math.PI), false);
+          ctxKnob.fillStyle = '#c30';
+          ctxKnob.fill();
+        } else if (spinImage) {
+          const { naturalWidth: imgWidth, naturalHeight: imgHeight } = spinImage;
+          ctxKnob.drawImage(spinImage, 0, 0, imgWidth, imgHeight, 0, 0, width, height);
+        }
+      };
+    })();
+
+    // render spin
+    const onSpin = (deg) => (knob.getFixed()&&drawSpin(deg));
+    drawSpin(knob.getDeg());
+
+    knob.on('spining', ({ detail }) => {
+      const { fingerDeg, offsetDeg, deg } = detail;
+      showDeg(detail);
+      onSpin(deg);
+    });
+    window.addEventListener('resize', () => onSpin(knob.getDeg()));
+  </script>
+</html>
