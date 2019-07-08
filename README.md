@@ -24,6 +24,8 @@ npm install .
 > **CAUTION: Knob.js is not tested on NodeJS environment. It uses `document` and `eventListener` related functions.**
 
 ```sh
+npm install @lf2com/knob.js
+# or
 npm install https://github.com/lf2com/knob.js
 ```
 
