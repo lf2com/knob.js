@@ -229,6 +229,9 @@
         if (!hard && !knob.getFixed()) {
           return;
         }
+        if (!knob.getFixed()) {
+          deg = 0;
+        }
         const { clientWidth: width, clientWidth: height } = domKnob;
         const center = {
           x: (0.5*width),
