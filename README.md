@@ -1,142 +1,297 @@
 # knob.js
 Knob tells the degree you spin. And let you know the degree of knob starts from center-top and positive value for clockwise.
 
-# Demo
+## Demo
+
 [Spin](https://lf2com.github.io/knob.js/demo/demo_spin.html)
 
-Unlimited knob for you to spin
+- Custom min/max degrees of spining
+- Change current degree
+- Toggle the render method of spin for performance judgement
 
-[DJ](https://lf2com.github.io/knob.js/demo/demo_dj.html)
+## Install
 
-Play audio file
+### Git
 
-# Build
-Knob.js is written with ES2015. To prevent issues of browser support, it's better to use browserify or babel to convert the code.
-Or you can run the script:
-```javascript
+```sh
+git clone https://github.com/lf2com/knob.js
+cd knob.js
 npm install .
+```
+
+### NodeJS
+
+> **CAUTION: Knob.js is not tested on NodeJS environment. It uses `document` and `eventListener` related functions.**
+
+```sh
+npm install https://github.com/lf2com/knob.js
+```
+
+> **Import**
+>
+> ```js
+> import Knob from '@lf2com/knob.js';
+> // Or
+> const Knob = require('@lf2com/knob.js');
+> ```
+
+### Build
+
+```sh
 npm run build
 ```
-Which equals to:
-```javascript
-npm install --save-dev babel-core babel-preset-es2015 babelify browserify uglify-js
-browserify knob.js -t [ babelify --presets [ es2015 ] ] | uglifyjs -cm > knob.min.js
-```
 
-# Browser
-Copy `knob.min.js`
-```javascript
+> **Debug Build**
+>
+> ```sh
+> npm run build-debug
+> ```
+
+### Browser
+
+Download from this repository or use your own built: [**`knob.min.js`**](https://lf2com.github.io/knob.js/knob.min.js)
+
+```html
+<!-- include script -->
 <script src="PATH/TO/knob.min.js"></script>
+
+<script>
+  console.log(window.Knob); // here it is
+</script>
 ```
 
-# Methods
-### Create knob
-`knob(DOMelement[, parameters])`
-```javascript
-knob(dom); // unlimit min/max degree knob
-```
-Or you can limit the min/max degree that the knob could be spinned:
-```javascript
-knob(dom, {
-  minDegree: -405,
-  maxDegree: 480
-});
-```
-| property | type | description |
-|-|-|-|
-| minDegree | _Number_ | (*optional*) minimum degree, default is `Infinity` |
-| maxDegree | _Number_ | (*optional*) maximum degree, default is `-Infinity` |
-| fixed | _Boolean_ | (*optional*) `true` to prevent knob to be spinned, default is `false` |
-| degree | _Number_ | (*optional*) degree for knob, default is `0` |
+## Usage
 
-### Remove knob
-```javascript
-knob.off(dom); // remove knob
-```
+### Create Knob
 
-### Set/get minimum degree
-```javascript
-knob.setMinDegree(dom, -405); // set to -405
-knob.getMinDegree(dom); // -405
+Create a knob object. Only allow HTML element.
 
-knob.setMinDegree(dom); // unset (unlimit)
-knob.getMinDegree(dom); // -Infinity
-```
+```js
+let knob = new Knob(elem);
 
-### Set/get maximum degree
-```javascript
-knob.setMaxDegree(dom, 480); // set to 480
-knob.getMaxDegree(dom); // 480
-
-knob.setMaxDegree(dom); // unset (unlimit)
-knob.getMaxDegree(dom); // Infinity
-```
-
-### Set/get fixed status
-```javascript
-knob.setFixed(dom, true); // set to fix
-knob.getFixed(dom); // true
-
-knob.setFixed(dom, false); // unset (unfixed)
-knob.getFixed(dom); // false
-
-knob.setFixed(dom); // unset (unfixed)
-knob.getFixed(dom); // false
-```
-
-### Set/get degree
-```javascript
-knob.setDegree(dom, 30); // set to 30deg
-knob.getDegree(dom); // 30
-```
-
-### Get all knob DOMs
-```javascript
-knob.doms(); // array of knob DOMs
-```
-
-# Events
-```javascript
-// event for start of spin (mousedown/touchstart)
-dom.addEventListener('spinstart', function(evt) {
-  console.log(evt.detail); // result (see the following table)
-});
-
-// event for spining (mousemove/touchmove)
-dom.addEventListener('spining', function(evt) {
-  console.log(evt.detail); // result (see the following table)
-});
-
-// event for end of spin (mouseup/touchend)
-dom.addEventListener('spinend', function(evt) {
-  console.log(evt.detail); // result (see the following table)
+// or init with parameters
+let knob = new Knob(elem, {
+  minDeg: 30,
+  maxDeg: 330,
 });
 ```
 
-| property | type | description |
-|-|-|-|
-| fingerDegree | _Number_ | degree of finger/mouse position, `undefined` for `spinend` event |
-| pinDegree | _Number_ | degree that the center-top moves (0 to 360) |
-| realDegree | _Number_ | actual degrees of rotation (`minDegree` to `maxDegree`, or unlimit) |
-| minDegree | _Number_ | minimum degree |
-| maxDegree | _Number_ | maximum degree |
-| fixed | _Boolean_ | `true` to prevent knob to be spinned |
+### Reset Knob
 
-# Performance
-Typically knob.js uses rotate of CSS transform to display the effect of spinning. To improve the performance of spinning effect, you can use canvas instead:
-```javascript
-knob(DOM, { fixed: true }); // fixed the knob
-DOM.addEventListener('spining', function(evt) {
-  var deg = evt.detail.realDegree;
-  var ctx = CANVAS.getContext('2d');
-  ctx.clearRect(0, 0, CANVAS.width, CANVAS.height);
+Erase changes of knob.
+
+#### .reset()
+
+```js
+knob.reset(); // return this
+```
+
+### Destroy Knob
+
+Destroy knob object and remove all event listeners on the HTML element.
+
+#### .destroy()
+
+```js
+knob.destroy();
+```
+
+### Enable/Disable Knob
+
+Enable/disable knob object to listen `mousedown`/`touchstart` event to spin.
+
+#### .enable()
+
+```js
+knob.enable(); // return this
+```
+
+#### .disable()
+
+```js
+knob.disable(); // return this
+```
+
+### Degree of Knob
+
+Current degree of knob
+
+#### .deg(deg?)
+
+Get/set degree of knob
+
+```js
+knob.deg(30); // set: unit degree, return this
+knob.deg(); // get: 30
+```
+
+> _Alias_
+>
+> **.setDeg(deg)**
+>
+> ```js
+> knob.setDeg(30); // set to 30
+> ```
+>
+> **.getDeg()**
+>
+> ```js
+> knob.getDeg(); // get 30
+> ```
+
+### Limit Degree of Knob
+
+Limit min/max degree for spining
+
+#### .minDeg(deg?)
+
+> _Default: `-Infinity` (deg)_
+
+#### .maxDeg(deg?)
+
+> _Default: `Infinity` (deg)_
+
+Get/set min/max degree
+
+```js
+knob.minDeg(0); // set: unit degree, return this
+knob.minDeg(); // get: 0
+
+knob.maxDeg(180); // set: unit degree, return this
+knob.maxDeg(); // get: 180
+```
+
+> _Alias_
+>
+> **.setMinDeg(deg)**
+>
+> **.setMaxDeg(deg)**
+>
+> ```js
+> knob.setMinDeg(0); // set to 0
+> knob.setMaxDeg(180); // set to 180
+> ```
+>
+> **.getMinDeg()**
+>
+> **.getMaxDeg()**
+>
+> ```js
+> knob.getMinDeg(); // get 0
+> knob.getMaxDeg(); // get 180
+> ```
+
+### Fix Degree of Knob
+
+For better performance, you may want to render the face of knob yourself. In this case, you have to fix the degree of knob then listen the spinning event to render the face of knob.
+
+> **If not fixed, the knob will use CSS transform to rotate the knob to change the degree of knob. [More detail](#Performance)**
+
+#### .fixed(enabled?)
+
+> _Default: `false`_
+
+```js
+knob.fixed(true); // set to fix knob
+knob.on('spinning', function(evt) {
+  let deg = evt.detail.deg;
+
+  // render knob with the new deg
+  // ...
+});
+
+knob.fixed(); // get true
+```
+
+> _Alias_
+>
+> **.setFixed(enabled)**
+>
+> ```js
+> knob.setFixed(true); // set true
+> ```
+>
+> **.getFixed()**
+>
+> ```js
+> knob.getFixed(); // get true
+> ```
+
+## Events of Knob
+
+Knob supports the following events:
+
+| _Name_ | _Description_ | _Alias_ |
+| :-: | :- | :-: |
+| **spinstart** | Start of spinning | `start` |
+| **spinend** | End of spinning | `end` |
+| **spinning** | Change of degree _(e.g. spinning, or changing the degree by programing)_ | `change` |
+
+### Arguments of Knob Event
+
+Each event has the following members in the detail of event object:
+
+| _Property_ | _Type_ | _Description_ |
+| :-: | :-: | :- |
+| **source** | _DOM_ | HTML element of knob |
+| **deg** | _Number_ | Degree of rotation |
+| **offsetDeg** | _Number_ | Different degree of this time spinning |
+| **fingerDeg** _(optional)_ | _Number_ | Mouse/touch degree of knob: _`[0, 360)`_ |
+
+> **CAUTION: `fingerDeg` would not be included for the `spinend` event or if the event is trigger without mouse/touch.**
+
+#### .on(eventNames, functions)
+
+Add event listener
+
+```js
+knob.on('spinstart', function(evt) {
+  let detail = evt.detail;
+  console.log('source', detail.source); // HTML element
+  console.log('deg', detail.deg); // degree of knob
+  console.log('offset deg', detail.offsetDeg); // different degree of this spinning
+  console.log('finger deg', detail.fingerDeg); // mouse/touch position degree
+});
+
+knob.on('spinning', function(evt) {
+  let detail = evt.detail;
+  console.log('source', detail.source); // HTML element
+  console.log('deg', detail.deg); // degree of knob
+  console.log('offset deg', detail.offsetDeg); // different degree of this spinning
+  console.log('finger deg', detail.fingerDeg); // mouse/touch position degree
+});
+
+knob.on('spinend', function(evt) {
+  let detail = evt.detail;
+  console.log('source', detail.source); // HTML element
+  console.log('deg', detail.deg); // degree of knob
+  console.log('offset deg', detail.offsetDeg); // different degree of this spinning
+  // no fingerDeg for the end event
+});
+```
+
+## Performance
+
+By default, knob uses CSS transform rotate to show the degree of knob. To improve the performance, use canvas to render the face of knob instead:
+
+```js
+knob.on('spinning', function(evt) {
+  let deg = evt.detail.deg;
+  let canvas = your_canvas;
+  let ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.save();
-  ctx.translate(CANVAS.width/2, CANVAS.height/2);
+  ctx.translate(canvas.width/2, canvas.height/2);
   ctx.rotate(deg*Math.PI/180);
-  ctx.translate(-CANVAS.width/2, -CANVAS.height/2);
+  ctx.translate(-canvas.width/2, -canvas.height/2);
+  
   // draw something
   // ...
+
   ctx.restore();
 });
 ```
-All the demos of this repository use canvas for displaying spinning effects.
+
+## License
+
+[MIT](https://github.com/lf2com/knob.js/blob/master/LICENSE) Copyright @ Wan Wan
