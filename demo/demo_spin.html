@@ -252,6 +252,7 @@
           const { naturalWidth: imgWidth, naturalHeight: imgHeight } = spinImage;
           ctxKnob.drawImage(spinImage, 0, 0, imgWidth, imgHeight, 0, 0, width, height);
         }
+        ctxKnob.restore();
       };
     })();
 
@@ -259,7 +260,7 @@
     const onSpin = (deg, hard) => drawSpin(deg, hard);
     drawSpin(knob.getDeg(), true);
 
-    knob.on('spining', ({ detail }) => {
+    knob.on('spinning', ({ detail }) => {
       const { fingerDeg, offsetDeg, deg } = detail;
       showDeg(detail);
       onSpin(deg);

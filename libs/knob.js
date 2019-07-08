@@ -9,7 +9,7 @@ const EVENT = {
   mouseUp: ['mouseup', 'touchend'],
   knobStart: ['spinstart', 'start'],
   knobEnd: ['spinend', 'end'],
-  knobSpin: ['spining', 'change'],
+  knobSpin: ['spinning', 'change'],
 };
 
 const getEventXY = ({ clientX, clientY, touches: [{ clientX: x = clientX, clientY: y = clientY } = {}] = []}) => ({ x, y });
@@ -42,6 +42,7 @@ const KNOB_PROPS = {
   maxDeg: '_maxDeg',
   fixed: '_fixed',
   deg: '_deg',
+  enabled: '_enabled',
 };
 
 const KNOB_DEFAULTS = {
@@ -49,6 +50,7 @@ const KNOB_DEFAULTS = {
   maxDeg: Infinity,
   fixed: false,
   deg: 0,
+  enabled: true,
 };
 
 function Knob(dom, params = {}) {
@@ -66,6 +68,7 @@ function Knob(dom, params = {}) {
     [KNOB_PROPS.maxDeg]: { value: KNOB_DEFAULTS.maxDeg, writable: true },
     [KNOB_PROPS.fixed]: { value: KNOB_DEFAULTS.fixed, writable: true },
     [KNOB_PROPS.deg]: { value: KNOB_DEFAULTS.deg, writable: true },
+    [KNOB_PROPS.enabled]: { value: KNOB_DEFAULTS.enabled, writable: true },
   });
   objForEach(params, (value, prop) => (isset(this[prop])&&this[prop](value)));
   this.enable();
@@ -85,52 +88,59 @@ Knob.prototype.reset = function() {
   this[KNOB_PROPS.dom].style.transform = '';
 }
 Knob.prototype.destroy = function() {
-  EventHandler.off(this[KNOB_PROPS.dom], EVENT.mouseDown);
+  this.disable();
 };
 
 Knob.prototype.disable = function() {
   EventHandler.off(this[KNOB_PROPS.dom], bindEventNames(this, EVENT.mouseDown));
+  this[KNOB_PROPS.enabled] = false;
   return this;
 };
 Knob.prototype.enable = function() {
-  EventHandler.on(this[KNOB_PROPS.dom], bindEventNames(this, EVENT.mouseDown), (evt) => {
-    evt.preventDefault();
-    const { top, right, bottom, left } = evt.target.getBoundingClientRect();
-    const eventHandler = this[KNOB_PROPS.eventHandler];
-    const center = { x: (.5*(right+left)), y: (.5*(top+bottom)) };
-    const originDeg = this[KNOB_PROPS.deg];
-    let lastFingerPos = getEventXY(evt);
-    let lastFingerDeg = posToDeg(lastFingerPos, center);
-    EventHandler.on(document, bindEventNames(this, EVENT.mouseMove), (evt) => {
+  if (!this[KNOB_PROPS.enabled]) {
+    EventHandler.on(this[KNOB_PROPS.dom], bindEventNames(this, EVENT.mouseDown), (evt) => {
+      evt.preventDefault();
       const { top, right, bottom, left } = evt.target.getBoundingClientRect();
+      const eventHandler = this[KNOB_PROPS.eventHandler];
       const center = { x: (.5*(right+left)), y: (.5*(top+bottom)) };
-      const fingerPos = getEventXY(evt);
-      const fingerDeg = posToDeg(fingerPos, center);
-      const diffDeg = ((diff) => (180<Math.abs(diff) ?(diff+(fingerDeg<lastFingerDeg ?360 :-360)) :diff))(fingerDeg-lastFingerDeg);
-      const currDeg = setDeg(this, (this[KNOB_PROPS.deg]+diffDeg));
-      this[KNOB_PROPS.deg] = currDeg;
-      lastFingerPos = fingerPos;
-      lastFingerDeg = fingerDeg;
-      eventHandler.trigger(EVENT.knobSpin, {
-        fingerDeg,
-        offsetDeg: (currDeg-originDeg),
-        deg: currDeg,
+      const originDeg = this[KNOB_PROPS.deg];
+      let lastFingerPos = getEventXY(evt);
+      let lastFingerDeg = posToDeg(lastFingerPos, center);
+      EventHandler.on(document, bindEventNames(this, EVENT.mouseMove), (evt) => {
+        const { top, right, bottom, left } = evt.target.getBoundingClientRect();
+        const center = { x: (.5*(right+left)), y: (.5*(top+bottom)) };
+        const fingerPos = getEventXY(evt);
+        const fingerDeg = posToDeg(fingerPos, center);
+        const diffDeg = ((diff) => (180<Math.abs(diff) ?(diff+(fingerDeg<lastFingerDeg ?360 :-360)) :diff))(fingerDeg-lastFingerDeg);
+        const currDeg = setDeg(this, (this[KNOB_PROPS.deg]+diffDeg));
+        this[KNOB_PROPS.deg] = currDeg;
+        lastFingerPos = fingerPos;
+        lastFingerDeg = fingerDeg;
+        eventHandler.trigger(EVENT.knobSpin, {
+          source: this[KNOB_PROPS.dom],
+          fingerDeg,
+          offsetDeg: (currDeg-originDeg),
+          deg: currDeg,
+        });
+      });
+      EventHandler.on(document, bindEventNames(this, EVENT.mouseUp), () => {
+        const deg = this[KNOB_PROPS.deg];
+        EventHandler.off(document, bindEventNames(this, EVENT.mouseMove, EVENT.mouseUp));
+        eventHandler.trigger(EVENT.knobEnd, {
+          source: this[KNOB_PROPS.dom],
+          offsetDeg: (deg-originDeg),
+          deg,
+        });
+      });
+      eventHandler.trigger(EVENT.knobStart, {
+        source: this[KNOB_PROPS.dom],
+        fingerDeg: posToDeg(lastFingerPos, center),
+        offsetDeg: 0,
+        deg: originDeg,
       });
     });
-    EventHandler.on(document, bindEventNames(this, EVENT.mouseUp), () => {
-      const deg = this[KNOB_PROPS.deg];
-      EventHandler.off(document, bindEventNames(this, EVENT.mouseMove, EVENT.mouseUp));
-      eventHandler.trigger(EVENT.knobEnd, {
-        offsetDeg: (deg-originDeg),
-        deg,
-      });
-    });
-    eventHandler.trigger(EVENT.knobStart, {
-      fingerDeg: posToDeg(lastFingerPos, center),
-      offsetDeg: 0,
-      deg: originDeg,
-    });
-  });
+    this[KNOB_PROPS.enabled] = true;
+  }
   return this;
 };
 
@@ -154,6 +164,7 @@ Knob.prototype.setDeg = function(deg) {
   const lastDeg = this[KNOB_PROPS.deg];
   deg = setDeg(this, deg);
   this[KNOB_PROPS.eventHandler].trigger(EVENT.knobSpin, {
+    source: this[KNOB_PROPS.dom],
     offsetDeg: (deg-lastDeg),
     deg,
   });

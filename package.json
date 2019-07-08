@@ -1,13 +1,23 @@
 {
-  "name": "knob",
-  "version": "1.0.0",
-  "description": "",
-  "main": "knob.js",
+  "name": "@lf2com/knob.js",
+  "version": "1.0.1",
+  "description": "Knob tells the degree you spin. And let you know the degree of knob starts from center-top and positive value for clockwise",
+  "main": "index.js",
   "scripts": {
     "build-debug": "browserify index.js -t [ babelify --presets [ es2015 stage-0 ] ] > knob.min.js",
     "build": "browserify index.js -t [ babelify --presets [ es2015 stage-0 ] ] | uglifyjs -cm > knob.min.js"
   },
   "author": "Wan Wan",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lf2com/knob.js"
+  },
+  "keywords": [
+    "knob"
+  ],
+  "bugs": {
+    "url": "https://github.com/lf2com/knob.js/issues"
+  },
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.26.0",
