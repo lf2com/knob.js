@@ -50,7 +50,7 @@ const KNOB_DEFAULTS = {
   maxDeg: Infinity,
   fixed: false,
   deg: 0,
-  enabled: true,
+  enabled: false,
 };
 
 function Knob(dom, params = {}) {
