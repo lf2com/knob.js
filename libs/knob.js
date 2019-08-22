@@ -150,15 +150,14 @@ const setDeg = (self, deg = self[KNOB_PROPS.deg]) => {
     throw new Error(`Invalid degree: ${tostr(deg)}`);
   }
   const fixed = self[KNOB_PROPS.fixed];
-  if (fixed) {
-    return false;
-  }
-  const dom = self[KNOB_PROPS.dom];
   const minDeg = self[KNOB_PROPS.minDeg];
   const maxDeg = self[KNOB_PROPS.maxDeg];
   deg = Math.min(maxDeg, Math.max(minDeg, deg));
-  dom.style.transformOrigin = 'center center';
-  dom.style.transform = `rotate(${stdDeg(deg)}deg)`;
+  if (!fixed) {
+    const dom = self[KNOB_PROPS.dom];
+    dom.style.transformOrigin = 'center center';
+    dom.style.transform = `rotate(${stdDeg(deg)}deg)`;
+  }
   self[KNOB_PROPS.deg] = deg;
   return deg;
 };
