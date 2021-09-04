@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1" />
+    <title>Knob.js Demo - Knobs</title>
+    <style>
+      body {
+        margin: 0;
+        font-size: 16px;
+        font-family: monospace;
+        color: #333;
+        text-align: center;
+      }
+
+      div {
+        margin: 0.25em 0.5em;
+      }
+
+      #knob {
+        margin: 1em;
+      }
+    </style>
+    <script src="../dist/knob.min.js"></script>
+  </head>
+  <body>
+    <div id="degree">
+      Degree: <input type="number" value="0" />
+    </div>
+    <div id="min">
+      <input type="checkbox" id="min-checkbox" />
+      <label for="min-checkbox">Min:</label>
+      <input type="number" value="-60" />
+    </div>
+    <div id="max">
+      <input type="checkbox" id="max-checkbox" />
+      <label for="max-checkbox">Max:</label>
+      <input type="number" value="120" />
+    </div>
+    <div id="style">
+      Style:
+      <input type="radio" name="style" id="dot" value="dot" />
+      <label for="dot">dot</label>
+      <input type="radio" name="style" id="triangle" value="triangle" />
+      <label for="triangle">triangle</label>
+      <input type="radio" name="style" id="line" value="line" />
+      <label for="line">line</label>
+    </div>
+    <div id="size" data-min="25" data-max="500" data-value="100">
+      Size:
+      <input type="range" />
+      <input type="number" />
+      px
+    </div>
+    <div>
+      <knob-dot id="knob"></knob-dot>
+    </div>
+  </body>
+  <script>
+    (function() {
+      const domDeg = document.getElementById('degree').querySelector('input[type=number]');
+      const domMin = document.getElementById('min');
+      const domMax = document.getElementById('max');
+      const domStyle = document.getElementById('style');
+      const domSize = document.getElementById('size');
+      const domMinCheck = domMin.querySelector('input[type=checkbox]');
+      const domMaxCheck = domMax.querySelector('input[type=checkbox]');
+      const domMinValue = domMin.querySelector('input[type=number]');
+      const domMaxValue = domMax.querySelector('input[type=number]');
+      const domSizeRange = domSize.querySelector('input[type=range]');
+      const domSizeValue = domSize.querySelector('input[type=number]');
+
+      function initKnob(dom) {
+        // displays knob degree
+        dom.addEventListener('change', function() {
+          domDeg.value = this.degree;
+          // or
+          // domDeg.value = this.value;
+        });
+
+        return dom;
+      }
+      
+      let domKnob = initKnob(document.getElementById('knob'));
+
+      // changes knob degree
+      domDeg.addEventListener('input', function() {
+        domKnob.degree = this.value;
+        // or
+        // domKnob.value = this.value;
+      });
+
+      // toggles of limiting the minimum degree of knob
+      domMinCheck.addEventListener('change', function(event) {
+        event.stopPropagation();
+
+        if (this.checked) {
+          domKnob.setAttribute('min', domMinValue.value);
+        } else {
+          domKnob.removeAttribute('min');
+        }
+      });
+
+      // changes the minimum degree of knob
+      domMinValue.addEventListener('input', function() {
+        if (domMinCheck.checked) {
+          domKnob.setAttribute('min', this.value);
+        }
+      });
+      
+      // toggles of limiting the maximum degree of knob
+      domMaxCheck.addEventListener('change', function(event) {
+        event.stopPropagation();
+
+        if (this.checked) {
+          domKnob.setAttribute('max', domMaxValue.value);
+        } else {
+          domKnob.removeAttribute('max');
+        }
+      });
+
+      // changes the maximum degree of knob
+      domMaxValue.addEventListener('input', function() {
+        if (domMaxCheck.checked) {
+          domKnob.setAttribute('max', this.value);
+        }
+      });
+
+      // changes the style of knob
+      domStyle.querySelectorAll('input[type=radio]')
+        .forEach(function(dom) {
+          dom.addEventListener('change', function() {
+            const domNewKnob = document.createElement(`knob-${this.value}`);
+
+            ['id', 'min', 'max', 'size']
+              .forEach(function(attrName) {
+                const value = domKnob.getAttribute(attrName);
+
+                if (value !== null) {
+                  domNewKnob.setAttribute(attrName, value);
+                }
+              });
+            
+            domNewKnob.degree = domKnob.degree;
+            domKnob.replaceWith(domNewKnob);
+            domKnob = initKnob(domNewKnob);
+          });
+        });
+      
+      // initializes pickuped style
+      domStyle.querySelector(`input[value=${
+        domKnob.nodeName
+          .replace(/^.+-/, '')
+          .toLowerCase()
+      }]`).setAttribute('checked', '');
+
+      // changes the size of knob
+      domSizeRange.addEventListener('input', function() {
+        domKnob.setAttribute('size', `${this.value}px`);
+        domSizeValue.value = this.value;
+      });
+      domSizeValue.addEventListener('input', function() {
+        domKnob.setAttribute('size', `${this.value}px`);
+        domSizeRange.value = this.value;
+      });
+      
+      // initializes size editors
+      [domSizeRange, domSizeValue].forEach(function(dom) {
+        dom.setAttribute('min', domSize.getAttribute('data-min'));
+        dom.setAttribute('max', domSize.getAttribute('data-max'));
+        dom.setAttribute('value', domSize.getAttribute('data-value'));
+      });
+
+      // sets min/max of knob size
+      domSizeValue.dispatchEvent(new InputEvent('input'));
+    })();
+  </script>
+</html>
