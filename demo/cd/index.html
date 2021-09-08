@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1" />
+    <title>Knob.js Demo - CD</title>
+    <link href="./style.scss" type="text/scss" rel="stylesheet" />
+    <script src="../scss.js"></script>
+    <script src="../../dist/knob.min.js"></script>
+  </head>
+  <body>
+    <!-- CD -->
+    <div id="plate">
+      <knob-base id="cd">
+        <div class="cover">
+          <div class="info">
+            <div class="wrap">
+              <div class="title"></div>
+              <div class="duration">
+                <span class="current">-:--</span>
+                /
+                <span class="total">-:--</span>
+              </div>
+            </div>
+          </div>
+          <div class="license"></div>
+        </div>
+      </knob-base>
+      <div class="bg"></div>
+    </div>
+
+    <!-- control -->
+    <audio id="cd-audio" src="./thief.mp3"></audio>
+    <div id="control">
+      <div class="play"></div>
+      <div class="pause"></div>
+      <div class="stop"></div>
+      <div class="track"></div>
+      <div class="duration">
+        <div class="current">-:--</div>
+        /
+        <div class="total">-:--</div>
+      </div>
+    </div>
+
+    <!-- clip path -->
+    <svg id="clip-path" width="0" height="0">
+      <defs>
+        <clipPath id="clip-path-cd" clipPathUnits="objectBoundingBox">
+          <path clip-rule="evenodd" d="
+            M0,0.5
+            a0.5,0.5 0,1,1 1,0
+            a0.5,0.5 0,1,1 -1,0 z
+            m0.45,0
+            a0.05,0.05 0,1,1 0.1,0
+            a0.05,0.05 0,1,1 -0.1,0 z
+          " />
+        </clipPath>
+        <clipPath id="clip-path-cover" clipPathUnits="objectBoundingBox">
+          <path clip-rule="evenodd" d="
+            M0,0.5
+            a0.5,0.5 0,1,1 1,0
+            a0.5,0.5 0,1,1 -1,0 z
+            m0.4,0
+            a0.1,0.1 0,1,1 0.2,0
+            a0.1,0.1 0,1,1 -0.2,0 z
+          " />
+        </clipPath>
+      </defs>
+    </svg>
+  </body>
+  <script src="./main.js"></script>
+</html>

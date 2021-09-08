@@ -1,0 +1,34 @@
+html {
+  background-color: #eee;
+}
+
+body {
+  margin: 1em auto;
+  padding: 1em;
+  width: max-content;
+  box-shadow: 0 0 1em #ccc;
+  background-color: #fff;
+  font-size: 16px;
+  font-family: monospace;
+  color: #333;
+  text-align: center;
+}
+
+#knob {
+  margin: 1em;
+}
+
+.row {
+  margin: 0.5em;
+  vertical-align: middle;
+  
+  input {
+    font-family: monospace;
+    font-size: 0.85rem;
+    vertical-align: text-top;
+  }
+
+  .name {
+    font-weight: bold;
+  }
+}
