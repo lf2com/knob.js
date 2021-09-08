@@ -57,6 +57,64 @@ You can add the script file to the HTML file:
 </script>
 ```
 
+### Styled Knobs
+
+We defined some styled knobs that we can use them directly without styling knob ourselves.
+
+#### Dot Knob
+
+![Dot knob](./demo/knob/knob-dot.gif)
+
+```html
+<knob-dot></knob-dot>
+```
+
+#### Line Knob
+
+![Line knob](./demo/knob/knob-line.gif)
+
+```html
+<knob-line></knob-line>
+```
+
+#### Triangle Knob
+
+![Triangle knob](./demo/knob/knob-triangle.gif)
+
+```html
+<knob-triangle></knob-triangle>
+```
+
+### Custom Knob
+
+We can custom knob with pure knob:
+
+![Custom knob](./demo/knob/knob-custom.gif)
+
+**NOTICE: When customing knob we need to append child node to `<knob-base>` and style the child node.**
+
+```html
+<style>
+  knob-base > .knob {
+    width: 100px;
+    height: 80px;
+    box-shadow: 0 0 5px #999;
+    box-sizing: border-box;
+    border-radius: 20%;
+    border: 3px solid #ccc;
+    display: inline-block;
+
+    /* ensure the knob can receive mouse/touch event */
+    background-color: rgba(0, 0, 0, 0);
+  }
+</style>
+
+<knob-base>
+  <!-- knob not rotates itself but its children -->
+  <span class="knob"></span>
+</knob-base>
+```
+
 ## Build
 
 You can build knob.js by the command:
