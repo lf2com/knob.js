@@ -115,14 +115,14 @@
   domLicense.innerHTML = CD_LICENSE;
 
   // init audio
-  audio.addEventListener('loadedmetadata', () => {
+  audio.addEventListener('canplay', () => {
     const { duration } = audio;
 
     domCd.min = 0;
     domCd.max = sec2deg(audio.duration);
     setCurrent(0);
     setTotal(duration);
-  });
+  }, { once: true });
 
   // stop
   domStop.addEventListener('click', () => {
@@ -145,7 +145,7 @@
   domTrack.addEventListener('touchstart', onTrack);
 
   // audio
-  audio.addEventListener('playing', () => {
+  audio.addEventListener('play', () => {
     let animationId = -1;
 
     const requestAnimationFrame = (
@@ -156,10 +156,6 @@
       window.cancelAnimationFrame
       || window.webkitCancelAnimationFrame
     );
-    const onPause = () => {
-      cancelAnimationFrame(animationId);
-      audio.removeEventListener('pause', onPause);
-    };
     const onNextFrame = () => {
       const { currentTime } = audio;
 
@@ -167,13 +163,26 @@
       domCd.degree = sec2deg(currentTime);
       animationId = requestAnimationFrame(onNextFrame);
     };
+    const onSpinStart = () => {
+      const onSpinEnd = () => {
+        onNextFrame();
+      };
 
-    audio.addEventListener('pause', onPause);
+      cancelAnimationFrame(animationId);
+      domCd.addEventListener('spinend', onSpinEnd, { once: true });
+    };
+    const onPause = () => {
+      cancelAnimationFrame(animationId);
+      domCd.removeEventListener('spinstart', onSpinStart);
+    };
+
+    audio.addEventListener('pause', onPause, { once: true });
+    domCd.addEventListener('spinstart', onSpinStart);
     onNextFrame();
   });
 
   // knob
-  domCd.addEventListener('spining', () => {
+  domCd.addEventListener('spinning', () => {
     const { degree, max } = domCd;
     const { duration } = audio;
     const ratio = degree / max;

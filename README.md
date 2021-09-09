@@ -1,6 +1,6 @@
 # knob.js
 
-Knob.js is an element for spining and getting the degree.
+Knob.js is an element for spinning and getting the degree.
 
 ## Demo
 
@@ -245,7 +245,7 @@ Values of `event.detail`:
 | offsetDegree | _number_ | Offset degree compared to degree of beginning. |
 
 ```js
-knob.addEventListener('spining', (event) => {
+knob.addEventListener('spinning', (event) => {
   const {
     detail: {
       degree, // current degree

@@ -146,7 +146,7 @@ class Knob extends HTMLElement {
 
     if (this.max < minDegree) {
       throw new RangeError(
-        `Setting min degree that is greater than max degree might cause spining error: ${minDegree} > ${this.max}`,
+        `Setting min degree that is greater than max degree might cause spinning error: ${minDegree} > ${this.max}`,
       );
     }
   }
@@ -170,7 +170,7 @@ class Knob extends HTMLElement {
 
     if (this.min > maxDegree) {
       throw new RangeError(
-        `Setting max degree that is less than min degree might cause spining error: ${maxDegree} < ${this.min}`,
+        `Setting max degree that is less than min degree might cause spinning error: ${maxDegree} < ${this.min}`,
       );
     }
   }
