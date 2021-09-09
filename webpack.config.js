@@ -1,6 +1,5 @@
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-// const TerserPlugin = require('terser-webpack-plugin');
 
 const BUILD_PATH = './dist';
 
@@ -20,10 +19,7 @@ module.exports = (env, options) => {
       ),
       path: path.resolve(__dirname, BUILD_PATH),
       clean: true,
-      publicPath: (PRODUCTION_MODE
-        ? '/'
-        : '/'
-      ),
+      publicPath: '/',
     },
     resolve: {
       extensions: ['.js', '.ts'],
