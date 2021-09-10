@@ -43,20 +43,15 @@ class Knob extends HTMLElement {
 
   #degree: number = 0;
 
-  protected domKnob: HTMLElement;
+  #domKnob: HTMLElement;
 
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
-
-    const shadowRoot = this.shadowRoot as ShadowRoot;
+    const shadowRoot = this.attachShadow({ mode: 'open' });
 
     shadowRoot.append(template.content.cloneNode(true));
-    this.domKnob = (
-      shadowRoot.querySelector('knob') as HTMLElement
-    );
-
+    this.#domKnob = shadowRoot.querySelector('knob') as HTMLElement;
     Knob.observedAttributes.forEach((attrName) => {
       this.attributeChangedCallback(attrName);
     });
@@ -202,7 +197,7 @@ class Knob extends HTMLElement {
       this.min,
     );
 
-    this.domKnob.style.setProperty('--degree', `${degree}deg`);
+    this.#domKnob.style.setProperty('--degree', `${degree}deg`);
     this.#degree = degree;
     triggerEvent<SpinEventDetail>(this, Events.change, {
       bubbles: false,
