@@ -4,7 +4,7 @@
 function registerElement(
   Node: typeof HTMLElement,
   nodeName: string,
-): Promise<void> {
+): ReturnType<typeof customElements.whenDefined> {
   if (customElements.get(nodeName)) {
     return Promise.reject(
       new Error(`Already defined <${nodeName}>`),
