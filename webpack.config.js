@@ -1,5 +1,4 @@
 const path = require('path');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 const BUILD_PATH = './dist';
 
@@ -15,7 +14,7 @@ module.exports = (env, options) => {
     output: {
       filename: (PRODUCTION_MODE
         ? 'knob.min.js'
-        : 'bundle.[contenthash].js'
+        : 'knob.dev.js'
       ),
       path: path.resolve(__dirname, BUILD_PATH),
       clean: true,
@@ -52,22 +51,16 @@ module.exports = (env, options) => {
         },
       ],
     },
-    plugins: (PRODUCTION_MODE
-      ? []
-      : [
-        new HtmlWebPackPlugin({
-          template: './demo/index.html',
-          filename: './index.html',
-        }),
-      ]
-    ),
+    plugins: [],
     devtool: 'inline-source-map',
     devServer: {
       https: false,
       host: DEV_PUBLIC ? 'local-ip' : 'localhost',
       port: '8080',
       compress: true,
-      open: true,
+      open: [
+        '/demo',
+      ],
       hot: true,
       static: {
         directory: path.resolve(__dirname),

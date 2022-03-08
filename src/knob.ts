@@ -7,9 +7,8 @@ import Attributes from './values/attributes';
 import Events from './values/events';
 
 const nodeName = 'knob-base';
-
-const { isNaN } = globalThis;
 const template = document.createElement('template');
+const { isNaN } = globalThis;
 
 template.innerHTML = `
   <style>

@@ -1,6 +1,6 @@
-import './src'; // basement knob
+import './src';
 
-// the follows are styled knobs
+// styled knobs
 import './src/knobs/dot';
 import './src/knobs/triangle';
 import './src/knobs/line';
