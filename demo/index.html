@@ -4,17 +4,53 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
     <title>Knob.js Demo</title>
-    <link href="/demo/style.scss" type="text/scss" rel="stylesheet" />
-    <script src="/demo/scss.js"></script>
+    <link href="/demo/style.css" type="text/css" rel="stylesheet" />
   </head>
   <body>
-    <div class="item">
-      <a href="/demo/knob/">Knob</a>
-      <p>Sets knob with min, max, and degree. And change the style of knob.</p>
-    </div>
-    <div class="item">
-      <a href="/demo/cd/">CD</a>
-      <p>An application of knob with CD styled media player.</p>
-    </div>
   </body>
+  <script>
+    (() => {
+      const items = [
+        {
+          name: 'Knob',
+          path: './knob/',
+          desc: 'Sets knob with min, max, and degree. And change the style of knob',
+        },
+        {
+          name: 'CD',
+          path: './cd/',
+          desc: 'An application of knob with CD styled media player',
+        },
+      ];
+      const addItem = (item, className = '') => {
+        const { name, path, desc } = item;
+        const domItem = document.createElement('div');
+        const domName = document.createElement('a');
+        const domDesc = document.createElement('p');
+
+        if (className.length > 0) {
+          domItem.classList.add(className);
+        }
+
+        domItem.classList.add('item');
+        domName.href = path;
+        domName.innerText = name;
+        domDesc.innerText = desc;
+        domItem.append(domName);
+        domItem.append(domDesc);
+        document.body.append(domItem);
+      };
+
+      items.forEach((item) => {
+        const {
+          children = [],
+        } = item;
+        
+        addItem(item);
+        children.forEach((child) => {
+          addItem(child, 'sub');
+        });
+      });
+    })();
+  </script>
 </html>
