@@ -39,7 +39,6 @@
       const n = strs[0];
 
       strs[0] = n % 60;
-
       strs.unshift(Math.floor(n / 60));
     }
 
@@ -48,7 +47,7 @@
     }
 
     return strs
-      .map((n) => `0${n}`.substr(-2))
+      .map((n) => `0${n}`.slice(-2))
       .join(':');
   }
 
@@ -81,14 +80,10 @@
     const { duration } = audio;
     const onMove = (evt) => {
       const {
-        clientX: cx,
-        touches: [
-          {
-            clientX: x = cx,
-          } = {},
-        ] = [],
+        clientX: x,
       } = evt;
-      const ratio = (x - left) / width;
+      const xOffset = Math.min(Math.max(0, x - left), width);
+      const ratio = xOffset / width;
       const time = duration * ratio;
 
       setCurrent(time, ratio);
@@ -96,17 +91,13 @@
       audio.currentTime = time;
     };
     const onEnd = () => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('touchmove', onMove);
-      document.removeEventListener('mouseup', onEnd);
-      document.removeEventListener('touchend', onEnd);
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onEnd);
     };
 
     event.preventDefault();
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('touchmove', onMove);
-    document.addEventListener('mouseup', onEnd);
-    document.addEventListener('touchend', onEnd);
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onEnd);
     onMove(event);
   }
 
@@ -141,8 +132,7 @@
   });
 
   // track
-  domTrack.addEventListener('mousedown', onTrack);
-  domTrack.addEventListener('touchstart', onTrack);
+  domTrack.addEventListener('pointerdown', onTrack);
 
   // audio
   audio.addEventListener('play', () => {
