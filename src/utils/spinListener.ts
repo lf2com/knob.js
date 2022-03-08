@@ -1,17 +1,15 @@
 import Knob from '../knob';
-import Events from '../values/events';
-import {
-  addEventListeners, removeEventListeners, triggerEvent,
-} from './eventHandler';
+import createPoint from '../types/Point';
+import Event from '../values/event';
+import { addEventListeners, removeEventListeners, triggerEvent } from './eventHandler';
 import getEventXY from './getEventXY';
 import {
-  getDiffRadius, getQuadrant, getRadiusOfQuadrant,
-  radiusToDegree,
+  getDiffRadius, getQuadrant, getRadiusOfQuadrant, radiusToDegree,
 } from './radiusAndDegree';
 
-const EVENT_TOUCH_START = ['mousedown', 'touchstart'];
-const EVENT_TOUCH_MOVE = ['mousemove', 'touchmove'];
-const EVENT_TOUCH_END = ['mouseup', 'touchend'];
+const EVENT_TOUCH_START = ['pointerdown'];
+const EVENT_TOUCH_MOVE = ['pointermove'];
+const EVENT_TOUCH_END = ['pointerup'];
 
 export interface SpinEventDetail {
   degree: number;
@@ -25,14 +23,14 @@ export interface SpinEventDetail {
  */
 function spinStartListener(
   this: Knob,
-  event: MouseEvent | TouchEvent,
+  event: PointerEvent,
 ): void {
   const {
     degree: startDegree,
   } = this;
-  const allStartEventsPassed = triggerEvent<SpinEventDetail>(
+  const passedStartEvent = triggerEvent<SpinEventDetail>(
     this,
-    Events.spinStart,
+    Event.spinStart,
     {
       bubbles: true,
       cancelable: true,
@@ -45,17 +43,17 @@ function spinStartListener(
     },
   );
 
-  if (!allStartEventsPassed) {
+  if (!passedStartEvent) {
     return;
   }
 
   const {
     top, right, bottom, left,
   } = this.getBoundingClientRect();
-  const center = {
-    x: (right + left) / 2,
-    y: (top + bottom) / 2,
-  };
+  const center = createPoint(
+    (right + left) / 2,
+    (top + bottom) / 2,
+  );
   const startPressPoint = getEventXY(event);
   const startPressQuadrant = getQuadrant(
     startPressPoint,
@@ -75,7 +73,7 @@ function spinStartListener(
    * Handles spinning/changing events binded with
    * mousemove/touchmove events.
    */
-  const spinningListener = (evt: MouseEvent | TouchEvent) => {
+  const spinningListener = (evt: PointerEvent) => {
     const pressPoint = getEventXY(evt);
     const pressQuadrant = getQuadrant(
       pressPoint,
@@ -100,9 +98,9 @@ function spinStartListener(
     totalDiffDegree += diffDegree;
 
     const nextDegree = startDegree + totalDiffDegree;
-    const allMoveEventsPassed = triggerEvent<SpinEventDetail>(
+    const passedMoveEvent = triggerEvent<SpinEventDetail>(
       this,
-      Events.spinning,
+      Event.spinning,
       {
         bubbles: true,
         cancelable: true,
@@ -118,7 +116,7 @@ function spinStartListener(
     lastQuadrant = pressQuadrant;
     lastRadius = pressRadius;
 
-    if (!allMoveEventsPassed) {
+    if (!passedMoveEvent) {
       return;
     }
 
@@ -136,7 +134,7 @@ function spinStartListener(
     removeEventListeners(document, EVENT_TOUCH_END, spinEndListener);
     triggerEvent<SpinEventDetail>(
       this,
-      Events.spinEnd,
+      Event.spinEnd,
       {
         bubbles: true,
         cancelable: false,

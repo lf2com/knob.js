@@ -3,12 +3,19 @@ import registerElement from './utils/registerElement';
 import {
   addSpinListeners, removeSpinListeners, SpinEventDetail,
 } from './utils/spinListener';
-import Attributes from './values/attributes';
-import Events from './values/events';
+import Attribute from './values/attribute';
+import Event from './values/event';
 
 const nodeName = 'knob-base';
-const template = document.createElement('template');
+
 const { isNaN } = globalThis;
+const template = document.createElement('template');
+
+export const defaultAttributeValues = {
+  [Attribute.degree]: 0,
+  [Attribute.min]: -Infinity,
+  [Attribute.max]: Infinity,
+};
 
 template.innerHTML = `
   <style>
@@ -34,15 +41,7 @@ template.innerHTML = `
 `;
 
 class Knob extends HTMLElement {
-  #disabled: boolean = false;
-
-  #minDegree: number = -Infinity;
-
-  #maxDegree: number = Infinity;
-
-  #degree: number = 0;
-
-  #domKnob: HTMLElement;
+  protected knobElement: HTMLElement;
 
   constructor() {
     super();
@@ -50,7 +49,7 @@ class Knob extends HTMLElement {
     const shadowRoot = this.attachShadow({ mode: 'open' });
 
     shadowRoot.append(template.content.cloneNode(true));
-    this.#domKnob = shadowRoot.querySelector('knob') as HTMLElement;
+    this.knobElement = shadowRoot.querySelector('knob') as HTMLElement;
     Knob.observedAttributes.forEach((attrName) => {
       this.attributeChangedCallback(attrName);
     });
@@ -58,10 +57,10 @@ class Knob extends HTMLElement {
 
   static get observedAttributes() {
     return [
-      Attributes.disabled,
-      Attributes.min,
-      Attributes.max,
-      Attributes.degree,
+      Attribute.disabled,
+      Attribute.min,
+      Attribute.max,
+      Attribute.degree,
     ];
   }
 
@@ -70,30 +69,36 @@ class Knob extends HTMLElement {
       default:
         break;
 
-      case Attributes.disabled:
-        this.disabled = this.hasAttribute(Attributes.disabled);
+      case Attribute.disabled:
+        this.disabled = this.hasAttribute(Attribute.disabled);
         break;
 
-      case Attributes.min:
-        this.min = Number(
-          this.getAttribute(Attributes.min)
-          ?? -Infinity,
+      case Attribute.min: {
+        const min = Number(
+          this.getAttribute(Attribute.min)
+          ?? defaultAttributeValues[Attribute.min],
         );
-        this.degree = Math.max(this.min, this.degree);
-        break;
 
-      case Attributes.max:
-        this.max = Number(
-          this.getAttribute(Attributes.max)
-          ?? Infinity,
+        this.min = min;
+        this.degree = Math.max(min, this.degree);
+        break;
+      }
+
+      case Attribute.max: {
+        const max = Number(
+          this.getAttribute(Attribute.max)
+          ?? defaultAttributeValues[Attribute.max],
         );
-        this.degree = Math.min(this.max, this.degree);
-        break;
 
-      case Attributes.degree:
+        this.max = max;
+        this.degree = Math.min(max, this.degree);
+        break;
+      }
+
+      case Attribute.degree:
         this.degree = Number(
-          this.getAttribute(Attributes.degree)
-          ?? 0,
+          this.getAttribute(Attribute.degree)
+          ?? defaultAttributeValues[Attribute.degree],
         );
         break;
     }
@@ -103,44 +108,50 @@ class Knob extends HTMLElement {
    * Returns true if Knob is disabled.
    */
   get disabled(): boolean {
-    return this.#disabled;
+    return this.hasAttribute(Attribute.disabled);
   }
 
   /**
    * Sets Knob disabled.
    */
-  set disabled(value: boolean) {
-    const disabled = Boolean(value);
-
+  set disabled(disabled: boolean) {
     if (disabled) {
       removeSpinListeners(this);
+      this.setAttribute(Attribute.disabled, '');
     } else {
       addSpinListeners(this);
+      this.removeAttribute(Attribute.disabled);
     }
-
-    this.#disabled = disabled;
   }
 
   /**
    * Returns min degree.
    */
   get min(): number {
-    return this.#minDegree;
+    const min = this.getAttribute(Attribute.min);
+
+    return (min === null
+      ? defaultAttributeValues[Attribute.min]
+      : Number(min)
+    );
   }
 
   /**
    * Sets min degree.
    */
-  set min(minDegree: number) {
-    if (isNaN(minDegree)) {
-      throw new TypeError(`Invalid min degree: ${minDegree}`);
+  set min(min: number) {
+    if (isNaN(min)) {
+      throw new TypeError(`Invalid min degree: ${min}`);
+    }
+    if (min === this.min) {
+      return;
     }
 
-    this.#minDegree = minDegree;
+    this.setAttribute(Attribute.min, `${min}`);
 
-    if (this.max < minDegree) {
+    if (this.max < min) {
       throw new RangeError(
-        `Setting min degree that is greater than max degree might cause spinning error: ${minDegree} > ${this.max}`,
+        'Setting min degree that is greater than max degree might cause spinning error',
       );
     }
   }
@@ -149,22 +160,30 @@ class Knob extends HTMLElement {
    * Returns max degree.
    */
   get max(): number {
-    return this.#maxDegree;
+    const max = this.getAttribute(Attribute.max);
+
+    return (max === null
+      ? defaultAttributeValues[Attribute.max]
+      : Number(max)
+    );
   }
 
   /**
    * Sets max degree.
    */
-  set max(maxDegree: number) {
-    if (isNaN(maxDegree)) {
-      throw new TypeError(`Invalid max degree: ${maxDegree}`);
+  set max(max: number) {
+    if (isNaN(max)) {
+      throw new TypeError(`Invalid max degree: ${max}`);
+    }
+    if (max === this.max) {
+      return;
     }
 
-    this.#maxDegree = maxDegree;
+    this.setAttribute(Attribute.max, `${max}`);
 
-    if (this.min > maxDegree) {
+    if (this.min > max) {
       throw new RangeError(
-        `Setting max degree that is less than min degree might cause spinning error: ${maxDegree} < ${this.min}`,
+        'Setting max degree that is less than min degree might cause spinning error',
       );
     }
   }
@@ -173,38 +192,46 @@ class Knob extends HTMLElement {
    * Returns degree.
    */
   get degree(): number {
-    return this.#degree;
+    const degree = this.getAttribute(Attribute.degree);
+
+    return (degree === null
+      ? defaultAttributeValues[Attribute.degree]
+      : Number(degree)
+    );
   }
 
   /**
    * Sets degree.
    */
-  set degree(value: number) {
+  set degree(degree: number) {
+    if (isNaN(degree)) {
+      throw new TypeError(`Invalid degree: ${degree}`);
+    }
+
     const {
       degree: lastDegree,
+      min,
+      max,
     } = this;
-
-    if (value === lastDegree) {
-      return;
-    }
-    if (isNaN(value)) {
-      throw new TypeError(`Invalid degree: ${value}`);
-    }
-
-    const degree = Math.max(
-      Math.min(value, this.max),
-      this.min,
+    const newDegree = Math.max(
+      min,
+      Math.min(degree, max),
     );
 
-    this.#domKnob.style.setProperty('--degree', `${degree}deg`);
-    this.#degree = degree;
-    triggerEvent<SpinEventDetail>(this, Events.change, {
-      bubbles: false,
+    if (newDegree === lastDegree) {
+      return;
+    }
+
+    this.knobElement.style.setProperty('--degree', `${newDegree}deg`);
+    this.setAttribute(Attribute.degree, `${newDegree}`);
+    triggerEvent<SpinEventDetail>(this, Event.change, {
+      bubbles: true,
       cancelable: false,
+      composed: true,
       detail: {
-        degree,
+        degree: newDegree,
         lastDegree,
-        offsetDegree: degree - lastDegree,
+        offsetDegree: newDegree - lastDegree,
       },
     });
   }

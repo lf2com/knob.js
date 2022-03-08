@@ -1,7 +1,7 @@
-import Point from './Point';
+import createPoint from '../types/Point';
 
 const { PI, hypot, asin } = Math;
-const originPoint: Point = { x: 0, y: 0 };
+const originDOMPoint: DOMPoint = createPoint(0, 0);
 
 type Quadrant = 1 | 2 | 3 | 4;
 
@@ -11,8 +11,8 @@ type Quadrant = 1 | 2 | 3 | 4;
  * Q3 = [PI, (3 * PI) / 2), Q4 = [(3 * PI) / 2, 2 * PI).
  */
 export function getQuadrant(
-  point: Point,
-  center: Point = originPoint,
+  point: DOMPoint,
+  center: DOMPoint = originDOMPoint,
 ): Quadrant {
   if (point.y < center.y) {
     return point.x > center.x ? 1 : 2;
@@ -28,8 +28,8 @@ export function getQuadrant(
  * Returns the radius value starting from the quadrant.
  */
 export function getRadiusOfQuadrant(
-  point: Point,
-  center: Point = originPoint,
+  point: DOMPoint,
+  center: DOMPoint = originDOMPoint,
   quadrant = getQuadrant(point, center),
 ): number {
   const diffX = point.x - center.x;
@@ -38,10 +38,17 @@ export function getRadiusOfQuadrant(
 
   switch (quadrant) {
     default:
-    case 1: return asin(-diffY / length);
-    case 2: return asin(-diffX / length);
-    case 3: return asin(diffY / length);
-    case 4: return asin(diffX / length);
+    case 1:
+      return asin(-diffY / length);
+
+    case 2:
+      return asin(-diffX / length);
+
+    case 3:
+      return asin(diffY / length);
+
+    case 4:
+      return asin(diffX / length);
   }
 }
 
@@ -60,14 +67,17 @@ export function getDiffRadius(
     case 0:
       // the same quadrant
       return lastRadius - nextRadius;
+
     case -3:
     case 1:
       // to the next quadrant
       return lastRadius - nextRadius - PI / 2;
+
     case -1:
     case 3:
       // to the prev quadrant
       return lastRadius - nextRadius + PI / 2;
+
     case -2:
     case 2: {
       // to the diagonal quadrant

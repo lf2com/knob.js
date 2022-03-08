@@ -1,8 +1,8 @@
-enum Events {
+enum Event {
   spinStart = 'spinstart',
   spinning = 'spinning',
   spinEnd = 'spinend',
   change = 'change',
 }
 
-export default Events;
+export default Event;
