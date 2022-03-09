@@ -1,6 +1,6 @@
 {
   "name": "@lf2com/knob.js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Knob.js is a DOM for spinning and getting the degree",
   "main": "index.ts",
   "scripts": {
