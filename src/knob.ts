@@ -5,6 +5,7 @@ import {
 } from './utils/spinListener';
 import Attribute from './values/attribute';
 import Event from './values/event';
+import Style from './values/style';
 
 const nodeName = 'knob-base';
 
@@ -26,7 +27,7 @@ template.innerHTML = `
     }
 
     knob {
-      transform: rotate(var(--degree));
+      transform: rotate(var(${Style.degree}));
       width: 100%;
       height: 100%;
       display: block;
@@ -222,7 +223,7 @@ class Knob extends HTMLElement {
       return;
     }
 
-    this.knobElement.style.setProperty('--degree', `${newDegree}deg`);
+    this.knobElement.style.setProperty(Style.degree, `${newDegree}deg`);
     this.setAttribute(Attribute.degree, `${newDegree}`);
     triggerEvent<SpinEventDetail>(this, Event.change, {
       bubbles: true,
