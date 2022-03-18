@@ -18,7 +18,7 @@
   const domDuration = domControl.querySelector('.duration');
   const domDurationCurrent = domDuration.querySelector('.current');
   const domDurationTotal = domDuration.querySelector('.total');
-  const audio = document.getElementById('cd-audio');
+  const audio = new Audio('./thief.mp3');
 
   /**
    * Returns degree.
@@ -106,19 +106,21 @@
   domLicense.innerHTML = CD_LICENSE;
 
   // init audio
-  audio.addEventListener('canplay', () => {
+  audio.addEventListener('loadedmetadata', () => {
     const { duration } = audio;
 
-    domCd.min = 0;
-    domCd.max = sec2deg(audio.duration);
+    domCd.setAttribute('min', 0);
+    domCd.setAttribute('max', sec2deg(duration));
     setCurrent(0);
     setTotal(duration);
   }, { once: true });
 
   // stop
+  window.cd = domCd;
   domStop.addEventListener('click', () => {
     audio.pause();
-    audio.currentTime = 0;
+    setCurrent(0, 0);
+    domCd.degree = 0;
   });
 
   // pause

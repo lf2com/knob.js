@@ -1,17 +1,15 @@
 (() => {
   /* eslint-disable no-console */
   /* eslint-disable no-alert */
-  const thisScript = document.head.lastChild;
-  const { scriptLoader } = window;
-  const rootPath = thisScript.getAttribute('src').replace(/\/[^/]+?$/, '');
-  const modules = (thisScript.getAttribute('module') ?? '')
+  const { currentScript } = document;
+  const { loadScript } = window;
+  const rootPath = currentScript.getAttribute('src').replace(/\w+\.\w+$/, '');
+  const modules = (currentScript.getAttribute('module') ?? '')
     .split(/[|;,\s]/)
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
 
-  scriptLoader.push(async () => {
-    const { loadScript } = scriptLoader;
-
+  (async () => {
     if (!customElements.get('knob-base')) {
       console.log('Loading knob');
 
@@ -42,5 +40,5 @@
       await loadScript(`${rootPath}/${module}.js`);
       console.log(`\`- Loaded: ${module}`);
     }, Promise.resolve());
-  });
+  })();
 })();
