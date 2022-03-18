@@ -22,11 +22,13 @@ template.innerHTML = `
   <style>
     :host {
       position: relative;
+      touch-action: none;
       display: inline-block;
       vertical-align: text-bottom;
     }
 
     knob {
+      transition: inherit;
       transform: rotate(var(${Style.degree}));
       width: 100%;
       height: 100%;
