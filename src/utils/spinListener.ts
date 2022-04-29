@@ -2,14 +2,14 @@ import Knob from '../knob';
 import createPoint from '../types/Point';
 import Event from '../values/event';
 import { addEventListeners, removeEventListeners, triggerEvent } from './eventHandler';
-import getEventXY from './getEventXY';
+import getEventXY, { TouchLikeEvent } from './getEventXY';
 import {
   getDiffRadius, getQuadrant, getRadiusOfQuadrant, radiusToDegree,
 } from './radiusAndDegree';
 
-const EVENT_TOUCH_START = ['pointerdown'];
-const EVENT_TOUCH_MOVE = ['pointermove'];
-const EVENT_TOUCH_END = ['pointerup'];
+const EVENT_TOUCH_START = ['mousedown', 'touchstart'];
+const EVENT_TOUCH_MOVE = ['mousemove', 'touchmove'];
+const EVENT_TOUCH_END = ['mouseup', 'touchend'];
 
 export interface SpinEventDetail {
   degree: number;
@@ -23,7 +23,7 @@ export interface SpinEventDetail {
  */
 function spinStartListener(
   this: Knob,
-  event: PointerEvent,
+  event: TouchLikeEvent,
 ): void {
   const {
     degree: startDegree,
@@ -73,7 +73,7 @@ function spinStartListener(
    * Handles spinning/changing events binded with
    * mousemove/touchmove events.
    */
-  const spinningListener = (evt: PointerEvent) => {
+  const spinningListener = (evt: TouchLikeEvent) => {
     const pressPoint = getEventXY(evt);
     const pressQuadrant = getQuadrant(
       pressPoint,
